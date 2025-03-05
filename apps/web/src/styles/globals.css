@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #5A67D8; /* Vibrant blue */
+  --color-secondary: #48BB78; /* Fresh green */
+  --color-accent: #F6AD55; /* Warm orange for CTAs */
+  --color-background: #F7FAFC; /* Light grey-white */
+  --color-text: #2D3748; /* Dark text */
+  --font-sans: 'Inter', 'Roboto', sans-serif;
+  --font-display: 'Cinzel', serif;
+}
