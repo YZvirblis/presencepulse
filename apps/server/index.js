@@ -7,6 +7,9 @@ const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
 const dashboardRoutes = require("./routes/dashboard.routes");
 const youtubeRoutes = require("./routes/youtube.routes");
+const redditRoutes = require("./routes/reddit.routes");
+const twitterRoutes = require("./routes/twitter.routes");
+
 
 
 const app = express();
@@ -15,7 +18,7 @@ const prisma = new PrismaClient();
 app.use(cors());
 app.use(express.json());
 
-app.use("/api", youtubeRoutes);
+app.use("/api", youtubeRoutes, redditRoutes, twitterRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/dashboard", dashboardRoutes);
