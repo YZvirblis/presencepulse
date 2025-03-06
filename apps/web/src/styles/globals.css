@@ -1,11 +1,93 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #5A67D8; /* Vibrant blue */
-  --color-secondary: #48BB78; /* Fresh green */
-  --color-accent: #F6AD55; /* Warm orange for CTAs */
-  --color-background: #F7FAFC; /* Light grey-white */
-  --color-text: #2D3748; /* Dark text */
+  --color-primary: #4A90E2;
+  --color-secondary: #1E1E2E;
+  --color-accent: #F5A623;
+  --color-background: #F8F9FA;
+  /* --color-text: #2D3748; */
+  --color-success: #48BB78;
+  --color-error: #E53E3E;
   --font-sans: 'Inter', 'Roboto', sans-serif;
-  --font-display: 'Cinzel', serif;
+}
+
+/* ✅ Global Styles */
+body {
+  background-color: var(--color-background);
+  color: var(--color-text); /* ✅ Ensures text is always readable */
+  font-family: var(--font-sans);
+}
+
+/* ✅ Headings should use primary color only when they are NOT on a primary background */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: bold;
+  color: var(--color-text); /* ✅ Default to readable text */
+}
+
+
+/* ✅ Special case: Use white text when on primary background */
+.bg-primary h1, .bg-primary h2, .bg-primary h3 {
+  color: white; /* ✅ Fix blue-on-blue issue */
+}
+
+
+/* ✅ Links */
+a {
+  color: var(--color-primary);
+  font-weight: 500;
+  transition: color 0.2s ease-in-out;
+}
+a:hover {
+  color: var(--color-accent);
+}
+
+/* ✅ Buttons */
+.btn {
+  display: inline-block;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+}
+.btn-primary:hover {
+  background-color: #3A7AD9;
+}
+
+.btn-secondary {
+  background-color: var(--color-secondary);
+  color: white;
+}
+.btn-secondary:hover {
+  background-color: #151523;
+}
+
+.btn-accent {
+  background-color: var(--color-accent);
+  color: white;
+}
+.btn-accent:hover {
+  background-color: #E6931C;
+}
+
+/* ✅ Containers */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ✅ Utility Classes */
+.shadow-box {
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 20px;
+  background-color: white;
 }
