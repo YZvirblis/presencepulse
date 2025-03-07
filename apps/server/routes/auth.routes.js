@@ -2,6 +2,7 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { PrismaClient } = require("@prisma/client");
+const { authenticateUser } = require("../middleware/auth.middleware");
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -55,6 +56,30 @@ router.post("/login", async (req, res) => {
     res.json({ token, user: { id: user.id, name: user.name, email } });
   } catch (error) {
     console.error("Login error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ✅ GET /auth/me - Get authenticated user details
+router.get("/me", authenticateUser, async (req, res) => {
+  try {
+    const userId = req.user.userId; // Extracted from token in middleware
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { name: true, email: true, tokens: true },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({
+      name: user.name,
+      email: user.email,
+      tokens: user.tokens,
+    });
+  } catch (error) {
+    console.error("Error fetching user:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });

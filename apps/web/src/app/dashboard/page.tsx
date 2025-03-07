@@ -1,13 +1,15 @@
 "use client";
 import { useState } from "react";
 import { fetchAllPlatformData } from "@/utils/fetchPlatforms";
+import { useAuth } from "@/context/AuthContext";
 import { FaYoutube, FaInstagram, FaReddit, FaTwitter } from "react-icons/fa";
 import { IoSearchOutline } from "react-icons/io5";
-import { MdOutlineAnalytics } from "react-icons/md";
+import { MdOutlineAnalytics, MdPerson, MdToken } from "react-icons/md";
 import StatCard from "@/components/StatCard";
 import PlatformInput from "@/components/PlatformInput";
 
 export default function Dashboard() {
+  const { user, consumeToken } = useAuth();
   const [handles, setHandles] = useState({
     youtube: "",
     instagram: "",
@@ -23,13 +25,20 @@ export default function Dashboard() {
 
   const handleAnalyze = async () => {
     if (!handles.youtube.trim() && !handles.instagram.trim() && !handles.reddit.trim() && !handles.twitter.trim()) return;
-
+    
+    const hasTokens = await consumeToken(); // ✅ Await async function
+  
+    if (!hasTokens) {
+      alert("No tokens left. Please register or subscribe.");
+      return;
+    }
+  
     setLoading(true);
     setData(null);
-
+  
     const platformData = await fetchAllPlatformData(handles);
     setData(platformData);
-
+  
     setLoading(false);
   };
 
@@ -40,38 +49,61 @@ export default function Dashboard() {
     (data?.twitter?.followers ? parseInt(data.twitter.followers) : 0);
 
   return (
-    <div className="container py-10">
-      <h1 className="text-4xl font-bold text-primary flex items-center gap-2">
-        <MdOutlineAnalytics className="text-accent" /> Digital Presence Analyzer
-      </h1>
-      <p className="text-lg text-text mt-2">Enter social media handles to analyze engagement.</p>
+    <div className="w-full h-screen flex flex-col items-center justify-center bg-gray-100">
+      {/* Header */}
+      <div className="w-full max-w-6xl px-6">
+        <h1 className="text-5xl font-extrabold text-primary flex items-center gap-3">
+          <MdOutlineAnalytics className="text-accent text-6xl" /> Digital Presence Analyzer
+        </h1>
+        <p className="text-lg text-gray-600 mt-2">
+          Welcome, <span className="font-bold">{user?.name}</span>! You have{" "}
+          <span className="font-bold text-primary">{user?.tokens}</span> tokens left.
+        </p>
+      </div>
 
       {/* Input Fields */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-        <PlatformInput icon={<FaYoutube className="text-red-500" />} label="YouTube Channel Name" value={handles.youtube} onChange={(e) => handleChange("youtube", e.target.value)} />
-        <PlatformInput icon={<FaInstagram className="text-pink-500" />} label="Instagram Username" value={handles.instagram} onChange={(e) => handleChange("instagram", e.target.value)} />
+      <div className="bg-white shadow-md p-6 rounded-lg grid grid-cols-1 md:grid-cols-4 gap-4 w-full max-w-6xl mt-6">
+        <PlatformInput icon={<FaYoutube className="text-red-500" />} label="YouTube Channel" value={handles.youtube} onChange={(e) => handleChange("youtube", e.target.value)} />
+        {/* <PlatformInput icon={<FaInstagram className="text-pink-500" />} label="Instagram Username" value={handles.instagram} onChange={(e) => handleChange("instagram", e.target.value)} /> */}
         <PlatformInput icon={<FaReddit className="text-orange-500" />} label="Reddit Subreddit" value={handles.reddit} onChange={(e) => handleChange("reddit", e.target.value)} />
         <PlatformInput icon={<FaTwitter className="text-blue-400" />} label="Twitter Username" value={handles.twitter} onChange={(e) => handleChange("twitter", e.target.value)} />
       </div>
 
       {/* Analyze Button */}
-      <button onClick={handleAnalyze} className="mt-6 bg-primary text-white px-6 py-3 rounded-lg flex items-center gap-2 text-lg" disabled={loading}>
-        <IoSearchOutline className="text-xl" /> {loading ? "Analyzing..." : "Analyze Presence"}
-      </button>
+      <div className="text-center mt-6">
+        <button
+          onClick={handleAnalyze}
+          className={`px-8 py-4 rounded-xl flex items-center gap-3 text-xl shadow-lg transition-all ${
+            user?.tokens > 0 ? "bg-primary text-white hover:bg-indigo-700" : "bg-gray-400 text-gray-700 cursor-not-allowed"
+          }`}
+          disabled={user?.tokens <= 0}
+        >
+          <IoSearchOutline className="text-2xl" /> {loading ? "Analyzing..." : "Analyze Presence"}
+        </button>
+      </div>
+
+      {/* Out of Tokens Message */}
+      {user?.tokens <= 0 && (
+        <div className="text-center mt-4 text-red-500 flex items-center justify-center gap-2">
+          <MdToken className="text-2xl" /> No tokens left. Please register or subscribe.
+        </div>
+      )}
 
       {/* Data Display */}
       {data && (
-        <div className="mt-8 bg-background p-6 rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold text-primary">Presence Summary</h2>
-          <p className="text-lg mt-2 text-text">
-            This identity has a total of <span className="font-bold">{totalFollowers.toLocaleString()}</span> followers across platforms.
+        <div className="mt-10 bg-white p-8 rounded-lg shadow-lg w-full max-w-6xl">
+          <h2 className="text-3xl font-bold text-primary flex items-center gap-2">
+            <MdPerson className="text-accent text-4xl" /> Presence Summary
+          </h2>
+          <p className="text-lg mt-2 text-gray-700">
+            This identity has a total of <span className="font-bold text-primary">{totalFollowers.toLocaleString()}</span> followers across platforms.
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-4">
-            {data.youtube && <StatCard title="YouTube Subscribers" value={data.youtube.subscribers} bgColor="bg-primary" />}
-            {data.instagram && <StatCard title="Instagram Followers" value={data.instagram.followers} bgColor="bg-secondary" />}
-            {data.reddit && <StatCard title="Reddit Subscribers" value={data.reddit.subscribers} bgColor="bg-orange-500" />}
-            {data.twitter && <StatCard title="Twitter Followers" value={data.twitter.followers} bgColor="bg-blue-400" />}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-6">
+            {data.youtube && <StatCard title="YouTube Subscribers" value={data.youtube.subscribers} icon={<FaYoutube />} bgColor="bg-primary" />}
+            {data.instagram && <StatCard title="Instagram Followers" value={data.instagram.followers} icon={<FaInstagram />} bgColor="bg-secondary" />}
+            {data.reddit && <StatCard title="Reddit Subscribers" value={data.reddit.subscribers} icon={<FaReddit />} bgColor="bg-orange-500" />}
+            {data.twitter && <StatCard title="Twitter Followers" value={data.twitter.followers} icon={<FaTwitter />} bgColor="bg-blue-400" />}
           </div>
         </div>
       )}

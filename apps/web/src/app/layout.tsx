@@ -1,6 +1,8 @@
+import { AuthProvider } from "@/context/AuthContext";
 import "../styles/globals.css";
 import { Metadata } from "next";
-import Navbar from "@/components/Navbar";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "PresencePulse - Digital Presence Analyzer",
@@ -15,8 +17,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-background text-text font-sans">
-        <Navbar />
-        <main className="container mx-auto p-6">{children}</main>
+      <AuthProvider>
+        <Navbar/>
+        <main className="">{children}</main>
+        <Footer/>
+      </AuthProvider>
       </body>
     </html>
   );

@@ -1,46 +1,47 @@
 @import "tailwindcss";
 
+/* ✅ Updated Color Palette */
 @theme {
-  --color-primary: #4A90E2;
-  --color-secondary: #1E1E2E;
-  --color-accent: #F5A623;
-  --color-background: #F8F9FA;
-  /* --color-text: #2D3748; */
-  --color-success: #48BB78;
-  --color-error: #E53E3E;
+  --color-primary: #4F46E5; /* Sleek Indigo Blue */
+  --color-secondary: #22C55E; /* Vibrant Green */
+  --color-accent: #FACC15; /* Golden Yellow for CTA */
+  --color-background: #F8FAFC; /* Light Grayish Blue */
+  --color-text: #1E293B; /* Dark Gray for Readability */
+  --color-success: #48BB78; /* Success Green */
+  --color-error: #E53E3E; /* Error Red */
   --font-sans: 'Inter', 'Roboto', sans-serif;
 }
 
 /* ✅ Global Styles */
 body {
   background-color: var(--color-background);
-  color: var(--color-text); /* ✅ Ensures text is always readable */
+  color: var(--color-text); /* Ensures text is always readable */
   font-family: var(--font-sans);
+  line-height: 1.6;
 }
 
-/* ✅ Headings should use primary color only when they are NOT on a primary background */
+/* ✅ Headings */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-sans);
   font-weight: bold;
-  color: var(--color-text); /* ✅ Default to readable text */
+  color: var(--color-text);
 }
 
-
-/* ✅ Special case: Use white text when on primary background */
-.bg-primary h1, .bg-primary h2, .bg-primary h3 {
-  color: white; /* ✅ Fix blue-on-blue issue */
+/* ✅ Special case: Use white text when on primary/secondary background */
+.bg-primary h1, .bg-primary h2, .bg-primary h3,
+.bg-secondary h1, .bg-secondary h2, .bg-secondary h3 {
+  color: white;
 }
-
 
 /* ✅ Links */
-a {
+/* a {
   color: var(--color-primary);
   font-weight: 500;
   transition: color 0.2s ease-in-out;
 }
 a:hover {
   color: var(--color-accent);
-}
+} */
 
 /* ✅ Buttons */
 .btn {
@@ -56,6 +57,7 @@ a:hover {
 .btn-primary {
   background-color: var(--color-primary);
   color: white;
+  cursor: pointer;
 }
 .btn-primary:hover {
   background-color: #3A7AD9;
@@ -64,17 +66,21 @@ a:hover {
 .btn-secondary {
   background-color: var(--color-secondary);
   color: white;
+  cursor: pointer;
+
 }
 .btn-secondary:hover {
-  background-color: #151523;
+  background-color: #1A9F52;
 }
 
 .btn-accent {
   background-color: var(--color-accent);
   color: white;
+  cursor: pointer;
+
 }
 .btn-accent:hover {
-  background-color: #E6931C;
+  background-color: #EAB308;
 }
 
 /* ✅ Containers */
@@ -90,4 +96,30 @@ a:hover {
   border-radius: 8px;
   padding: 20px;
   background-color: white;
+}
+
+/* ✅ Smooth animations for better UI feel */
+.transition {
+  transition: all 0.3s ease-in-out;
+}
+
+/* ✅ Icon Styling */
+.icon {
+  font-size: 24px;
+  vertical-align: middle;
+}
+
+/* ✅ Navbar */
+.navbar {
+  background-color: white;
+  padding: 15px 20px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* ✅ Footer */
+.footer {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 20px;
+  text-align: center;
 }

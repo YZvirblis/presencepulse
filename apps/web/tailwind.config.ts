@@ -7,13 +7,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: "#4A90E2",  // Sleek Bright Blue
-        secondary: "#1E1E2E",  // Deep Navy
-        accent: "#F5A623",  // Warm Amber
-        background: "#F8F9FA",  // Off-White
-        text: "#2D3748",  // Slate Gray
-        success: "#48BB78",  // Success Green
-        error: "#E53E3E",  // Error Red
+        primary: "#4F46E5", // Sleek Indigo Blue
+        secondary: "#22C55E", // Vibrant Green
+        accent: "#FACC15", // Golden Yellow for CTA
+        background: "#F8FAFC", // Light Grayish Blue
+        text: "#1E293B", // Darker Gray for Readability
       },
       fontFamily: {
         sans: ["Inter", "Roboto", "sans-serif"],

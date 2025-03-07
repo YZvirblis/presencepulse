@@ -1,6 +1,10 @@
 const express = require("express");
 const { authenticateUser } = require("../middleware/auth.middleware");
+const { PrismaClient } = require("@prisma/client");
 
+
+
+const prisma = new PrismaClient();
 const router = express.Router();
 
 // Mocked Engagement Data (Replace this with real API integrations later)
@@ -30,5 +34,38 @@ router.get("/", authenticateUser, async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+router.post("/consume-token", authenticateUser, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    // Fetch user tokens
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { tokens: true },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (user.tokens <= 0) {
+      return res.status(400).json({ error: "No tokens available" });
+    }
+
+    // Deduct token
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: { tokens: user.tokens - 1 },
+    });
+
+    res.json({ success: true, tokensLeft: updatedUser.tokens });
+  } catch (error) {
+    console.error("Error consuming token:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
 
 module.exports = router;

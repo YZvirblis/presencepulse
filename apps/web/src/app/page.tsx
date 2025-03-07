@@ -1,19 +1,11 @@
-import Link from "next/link";
+import { HeroSection } from "@/components/HeroSection";
+import { Features } from "@/components/Features";
 
-export default function HomePage() {
+export default function Home() {
   return (
-    <section className="container flex flex-col items-center justify-center text-center min-h-screen">
-      <h1 className="text-5xl ">PresencePulse</h1>
-      <p className="mt-4 text-lg">Monitor and enhance your online presence in real-time.</p>
-
-      <div className="mt-6 space-x-4">
-        <Link href="/dashboard" className="btn btn-primary">
-          Go to Dashboard
-        </Link>
-        <Link href="/auth/login" className="btn btn-secondary">
-          Login
-        </Link>
-      </div>
-    </section>
+    <div className="bg-background text-text">
+      <HeroSection />
+      <Features />
+    </div>
   );
 }
