@@ -31,30 +31,45 @@ async function getRedditToken() {
   }
 }
 
-// 🟢 Fetch Reddit Subreddit Analytics
+// 🟢 Fetch Reddit Subreddit Analytics (Subscribers & Active Users)
 router.get("/reddit/subreddit/:subreddit", async (req, res) => {
   const { subreddit } = req.params;
   try {
     const token = await getRedditToken();
     if (!token) return res.status(500).json({ error: "Failed to authenticate with Reddit API" });
-
+    // Fetch subreddit details
     const response = await fetch(`https://oauth.reddit.com/r/${subreddit}/about`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "User-Agent": REDDIT_USER_AGENT,
       },
     });
-
+    
     const data = await response.json();
-    if (data && data.data) {
-      res.json({
-        subreddit: data.data.display_name_prefixed,
-        subscribers: data.data.subscribers,
-        activeUsers: data.data.accounts_active,
-      });
-    } else {
-      res.status(404).json({ error: "Subreddit not found" });
-    }
+    if (!data || !data.data) return res.status(404).json({ error: "Subreddit not found" });
+    
+    const { display_name_prefixed, subscribers, accounts_active } = data.data;
+    
+    // ✅ Fetch top posts to calculate engagement
+    const postsResponse = await fetch(`https://oauth.reddit.com/r/${subreddit}/top.json?limit=10`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "User-Agent": REDDIT_USER_AGENT,
+      },
+    });
+
+    const postsData = await postsResponse.json();
+    const totalUpvotes = postsData.data.children.reduce((sum, post) => sum + post.data.ups, 0);
+
+    // ✅ Calculate Engagement Rate
+    const engagementRate = subscribers > 0 ? ((totalUpvotes / subscribers) * 100).toFixed(2) + "%" : "N/A";
+
+    res.json({
+      subreddit: display_name_prefixed,
+      subscribers,
+      activeUsers: accounts_active,
+      engagementRate,
+    });
   } catch (error) {
     console.error("Reddit API Error:", error);
     res.status(500).json({ error: "Failed to fetch subreddit data" });
