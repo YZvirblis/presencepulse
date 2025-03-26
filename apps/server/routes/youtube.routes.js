@@ -7,7 +7,8 @@ const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 
 // 🟢 Search for a YouTube Channel by Name and Retrieve its Channel ID
 router.get("/youtube/search/:query", async (req, res) => {
-  const { query } = req.params;
+  let { query } = req.params;
+  query = query.trim(" ").toLowerCase().replace(/\s/g, '');
 
   try {
     const response = await fetch(

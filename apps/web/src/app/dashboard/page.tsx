@@ -17,6 +17,8 @@ export default function Dashboard() {
   });
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any>(null);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
 
   const handleChange = (platform: string, value: string) => {
     setHandles((prev) => ({ ...prev, [platform]: value }));
@@ -35,6 +37,13 @@ export default function Dashboard() {
     setData(null);
 
     const platformData = await fetchAllPlatformData(handles);
+    const newErrors: { [key: string]: string } = {};
+    
+    Object.entries(platformData).forEach(([platform, data]) => {
+      if (data?.error) newErrors[platform] = data.error;
+    });
+    
+    setErrors(newErrors);
     setData(platformData);
 
     setLoading(false);
@@ -60,9 +69,9 @@ export default function Dashboard() {
 
       {/* Input Fields */}
       <div className="bg-white shadow-md p-6 rounded-lg grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-6xl mt-6">
-        <PlatformInput icon={<FaYoutube className="text-red-500" />} label="YouTube Channel" value={handles.youtube} onChange={(e) => handleChange("youtube", e.target.value)} />
-        <PlatformInput icon={<FaReddit className="text-orange-500" />} label="Reddit Subreddit" value={handles.reddit} onChange={(e) => handleChange("reddit", e.target.value)} />
-        <PlatformInput icon={<FaTwitter className="text-blue-400" />} label="Twitter Username" value={handles.twitter} onChange={(e) => handleChange("twitter", e.target.value)} />
+        <PlatformInput error={errors.youtube} icon={<FaYoutube className="text-red-500" />} label="YouTube Channel" value={handles.youtube} onChange={(e) => handleChange("youtube", e.target.value)} />
+        <PlatformInput error={errors.reddit} icon={<FaReddit className="text-orange-500" />} label="Reddit Subreddit" value={handles.reddit} onChange={(e) => handleChange("reddit", e.target.value)} />
+        <PlatformInput error={errors.twitter} icon={<FaTwitter className="text-blue-400" />} label="Twitter Username" value={handles.twitter} onChange={(e) => handleChange("twitter", e.target.value)} />
       </div>
 
       {/* Analyze Button */}
@@ -97,18 +106,27 @@ export default function Dashboard() {
 
           {/* Stat Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
-            {data.youtube && <StatCard title="YouTube Subscribers" value={data.youtube.subscribers} icon={<FaYoutube />} bgColor="bg-primary" />}
-            {data.youtube && <StatCard title="YouTube Avg Views Per Video" value={data.youtube.avgViewsPerVideo} icon={<FaYoutube />} bgColor="bg-primary" />}
-            {data.youtube && <StatCard title="YouTube Engagement Rate" value={data.youtube.engagementRate} icon={<FaYoutube />} bgColor="bg-primary" />}
+          {data.youtube && !errors.youtube && (
+          <>  
+            <StatCard title="YouTube Subscribers" value={data.youtube.subscribers} icon={<FaYoutube />} bgColor="bg-primary" />
+            <StatCard title="YouTube Avg Views Per Video" value={data.youtube.avgViewsPerVideo} icon={<FaYoutube />} bgColor="bg-primary" />
+            <StatCard title="YouTube Engagement Rate" value={data.youtube.engagementRate} icon={<FaYoutube />} bgColor="bg-primary" />
+          </>
+          )}
 
-            {data.reddit && <StatCard title="Reddit Subscribers" value={data.reddit.subscribers} icon={<FaReddit />} bgColor="bg-orange-500" />}
-            {data.reddit && <StatCard title="Reddit Active Users" value={data.reddit.activeUsers} icon={<FaReddit />} bgColor="bg-orange-500" />}
-            {data.reddit && <StatCard title="Reddit Engagement Rate" value={data.reddit.engagementRate} icon={<FaReddit />} bgColor="bg-orange-500" />}
-
-            {data.twitter && <StatCard title="Twitter Followers" value={data.twitter.followers} icon={<FaTwitter />} bgColor="bg-blue-400" />}
-            {data.twitter && <StatCard title="Twitter Likes" value={data.twitter.totalLikes} icon={<FaTwitter />} bgColor="bg-blue-400" />}
-            {data.twitter && <StatCard title="Twitter Retweets" value={data.twitter.totalRetweets} icon={<FaTwitter />} bgColor="bg-blue-400" />}
-            {data.twitter && <StatCard title="Twitter Engagement Rate" value={data.twitter.engagementRate} icon={<FaTwitter />} bgColor="bg-blue-400" />}
+          {data.reddit && !errors.reddit && (
+            <>
+            <StatCard title="Reddit Subscribers" value={data.reddit.subscribers} icon={<FaReddit />} bgColor="bg-orange-500" />
+            <StatCard title="Reddit Active Users" value={data.reddit.activeUsers} icon={<FaReddit />} bgColor="bg-orange-500" />
+            <StatCard title="Reddit Engagement Rate" value={data.reddit.engagementRate} icon={<FaReddit />} bgColor="bg-orange-500" />
+            </>
+          )}       
+          {data.twitter && !errors.twitter && (<>
+            <StatCard title="Twitter Followers" value={data.twitter.followers} icon={<FaTwitter />} bgColor="bg-blue-400" />
+            <StatCard title="Twitter Likes" value={data.twitter.totalLikes} icon={<FaTwitter />} bgColor="bg-blue-400" />
+            <StatCard title="Twitter Retweets" value={data.twitter.totalRetweets} icon={<FaTwitter />} bgColor="bg-blue-400" />
+            <StatCard title="Twitter Engagement Rate" value={data.twitter.engagementRate} icon={<FaTwitter />} bgColor="bg-blue-400" />
+          </>)}
           </div>
         </div>
       )}

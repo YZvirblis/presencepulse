@@ -2,7 +2,7 @@ import { FaChartBar, FaBolt, FaUserCheck } from "react-icons/fa";
 
 export function Features() {
   return (
-    <section className="py-16 bg-white text-center">
+    <section className="py-16 text-center h-full flex flex-col items-center justify-center">
       <h2 className="text-4xl font-bold text-primary">Why Choose PresencePulse?</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10 max-w-6xl mx-auto">
         <FeatureCard icon={<FaChartBar className="text-primary text-4xl" />} title="Multi-Platform Analytics" description="Track YouTube, Instagram, Twitter, and Reddit engagement in one place." />

@@ -19,7 +19,7 @@ export default function RootLayout({
       <body className="bg-background text-text font-sans">
       <AuthProvider>
         <Navbar/>
-        <main className="">{children}</main>
+        <main className="min-h-screen flex flex-col flex-grow ">{children}</main>
         <Footer/>
       </AuthProvider>
       </body>

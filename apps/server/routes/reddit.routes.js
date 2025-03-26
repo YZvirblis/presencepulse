@@ -33,7 +33,16 @@ async function getRedditToken() {
 
 // 🟢 Fetch Reddit Subreddit Analytics (Subscribers & Active Users)
 router.get("/reddit/subreddit/:subreddit", async (req, res) => {
-  const { subreddit } = req.params;
+  let { subreddit } = req.params;
+
+  // Clean up the subreddit string
+subreddit = subreddit
+.trim()
+.toLowerCase()
+.replace(/\s/g, '')        // remove all whitespace
+.replace(/^u\//, '')       // remove leading "u/" if exists
+.replace(/^r\//, '');      // remove leading "r/" if exists
+
   try {
     const token = await getRedditToken();
     if (!token) return res.status(500).json({ error: "Failed to authenticate with Reddit API" });

@@ -9,8 +9,8 @@ const TWITTER_USER_AGENT = process.env.TWITTER_USER_AGENT;
 
 // 🟢 Fetch Twitter User Data
 router.get("/twitter/user/:username", async (req, res) => {
-  const { username } = req.params;
-
+  let { username } = req.params;
+  username = username.trim(" ").toLowerCase().replace(/\s/g, '');
   try {
     const response = await fetch(
       `https://api.twitter.com/2/users/by/username/${username}?user.fields=public_metrics`,
@@ -23,6 +23,7 @@ router.get("/twitter/user/:username", async (req, res) => {
     );
 
     const data = await response.json();
+    if(data.status === 429) return res.status(429).json({ error: "Rate limit exceeded" });
     if (!data.data) return res.status(404).json({ error: "Twitter user not found" });
 
     const userId = data.data.id;
@@ -41,6 +42,8 @@ router.get("/twitter/user/:username", async (req, res) => {
     );
 
     const tweetsData = await tweetsResponse.json();
+
+    if(tweetsResponse.status === 429) return res.status(429).json({ error: "Rate limit exceeded" });
     if (!tweetsData.data) return res.status(404).json({ error: "No tweets found" });
 
     // ✅ Calculate Total Engagement
@@ -59,13 +62,16 @@ router.get("/twitter/user/:username", async (req, res) => {
     const engagementRate = followers > 0 ? ((totalEngagement / followers) * 100).toFixed(2) + "%" : "N/A";
 
     res.json({
+      platform: "twitter",
       username: data.data.username,
       followers,
       tweetCount,
       engagementRate,
-      totalLikes,
-      totalRetweets,
-      totalReplies,
+      engagement: {
+        likes: totalLikes,
+        retweets: totalRetweets,
+        replies: totalReplies
+      }
     });
   } catch (error) {
     console.error("Twitter API Error:", error);
