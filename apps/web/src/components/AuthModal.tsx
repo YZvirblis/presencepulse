@@ -1,14 +1,20 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { authenticateUser, registerUser } from "@/utils/auth";
 import { FaTimes, FaSignInAlt, FaUserPlus } from "react-icons/fa";
+import { useAuth } from "@/context/AuthContext";
 
 export function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const router = useRouter();
   const [mode, setMode] = useState<"login" | "register">("login");
   const [name, setName] = useState(""); // ✅ Added Name field
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  const { loginUser } = useAuth(); // ✅ use the new method
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +34,9 @@ export function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
       const token = await authenticateUser(email, password);
       if (token) {
         localStorage.setItem("token", token);
+        await loginUser(); // ✅ update context state
         onClose(); // Close modal after login
+        router.push("/dashboard"); // Redirect to dashboard
       } else {
         setError("Invalid email or password");
       }

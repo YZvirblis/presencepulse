@@ -6,6 +6,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   user: { name: string; email: string; tokens: number } | null;
   login: (userData: any) => void;
+  loginUser: () => Promise<void>; // ✅ Add this
   logout: () => void;
   consumeToken: () => Promise<boolean>;
 }
@@ -38,6 +39,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(null);
   };
 
+  const loginUser = async () => {
+    const authData = await checkAuthStatus();
+    if (authData && authData.name !== "Guest") {
+      setIsAuthenticated(true);
+      setUser(authData);
+    }
+  };
+
   const consumeToken = async (): Promise<boolean> => {
     if (!user || user.tokens <= 0) {
       return false; // No tokens left
@@ -56,7 +65,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, consumeToken }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, loginUser, login, logout, consumeToken }}>
       {children}
     </AuthContext.Provider>
   );
