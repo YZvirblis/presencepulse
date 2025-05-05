@@ -33,21 +33,34 @@ export async function registerUser(name: string, email: string, password: string
     return false;
   }
 }
-
 export async function checkAuthStatus() {
   const token = localStorage.getItem("token");
-  if (!token) return { name: "Guest", email: "demo", tokens: 5 }; // Guest mode with 5 tokens
+
+  // ✅ If no token, fallback to guest user
+  if (!token) {
+    console.log("🟡 No token found. Using guest mode.");
+    return { name: "Guest", email: "demo", tokens: 5 };
+  }
+
   try {
     const res = await fetch(`${API_URL}/auth/me`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    console.log(res);
-    if (!res.ok) throw new Error("Invalid token");
-    return await res.json();
+
+    if (!res.ok) {
+      console.warn("🔴 Invalid token. Falling back to guest mode.");
+      throw new Error("Invalid token");
+    }
+
+    const userData = await res.json();
+    console.log("✅ Authenticated as:", userData.name);
+    return userData;
   } catch (error) {
-    return { name: "Guest", email: "demo", tokens: 5 }; // Fallback to guest mode
+    console.error("⚠️ Auth check failed:", error);
+    return { name: "Guest", email: "demo", tokens: 5 };
   }
 }
+
 
 export function logoutUser() {
   localStorage.removeItem("token");

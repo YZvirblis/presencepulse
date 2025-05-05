@@ -7,6 +7,7 @@ import { IoSearchOutline } from "react-icons/io5";
 import { MdOutlineAnalytics, MdPerson, MdToken, MdTrendingUp } from "react-icons/md";
 import StatCard from "@/components/StatCard";
 import PlatformInput from "@/components/PlatformInput";
+import { AuthModal } from "@/components/AuthModal";
 
 export default function Dashboard() {
   const { user, consumeToken } = useAuth();
@@ -15,10 +16,10 @@ export default function Dashboard() {
     reddit: "",
     twitter: "",
   });
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-
 
   const handleChange = (platform: string, value: string) => {
     setHandles((prev) => ({ ...prev, [platform]: value }));
@@ -26,23 +27,23 @@ export default function Dashboard() {
 
   const handleAnalyze = async () => {
     if (!handles.youtube.trim() && !handles.reddit.trim() && !handles.twitter.trim()) return;
-    
-    // const hasTokens = await consumeToken();
-    // if (!hasTokens) {
-    //   alert("No tokens left. Please register or subscribe.");
-    //   return;
-    // }
+
+    const hasTokens = await consumeToken();
+    if (!hasTokens) {
+      alert("No tokens left. Please register or subscribe.");
+      return;
+    }
 
     setLoading(true);
     setData(null);
 
     const platformData = await fetchAllPlatformData(handles);
     const newErrors: { [key: string]: string } = {};
-    
+
     Object.entries(platformData).forEach(([platform, data]) => {
       if (data?.error) newErrors[platform] = data.error;
     });
-    
+
     setErrors(newErrors);
     setData(platformData);
 
@@ -56,6 +57,8 @@ export default function Dashboard() {
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center bg-gray-100 py-10">
+            {/* Authentication Modal */}
+            <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
       {/* Header */}
       <div className="w-full max-w-6xl px-6 text-center">
         <h1 className="text-5xl font-extrabold text-primary flex items-center justify-center gap-3">
@@ -65,6 +68,19 @@ export default function Dashboard() {
           Welcome, <span className="font-bold">{user?.name}</span>! You have{" "}
           <span className="font-bold text-primary">{user?.tokens}</span> tokens left.
         </p>
+        {/* Guest Notice */}
+{user?.name === "Guest" && (
+  <div className="mt-4 flex items-center justify-center gap-3 text-yellow-600 bg-yellow-100 border border-yellow-300 px-4 py-3 rounded">
+    <span className="font-medium">You're using a guest account.</span>
+    <button
+      className="text-primary underline hover:text-indigo-800 transition cursor-pointer"
+      onClick={() => setAuthModalOpen(true)}
+    >
+      Log in or register
+    </button>
+  </div>
+)}
+
       </div>
 
       {/* Input Fields */}
@@ -81,7 +97,7 @@ export default function Dashboard() {
           className={`px-8 py-4 rounded-xl flex items-center gap-3 text-xl shadow-lg transition-all ${
             user?.tokens > 0 ? "bg-primary text-white hover:bg-indigo-700" : "bg-gray-400 text-gray-700 "
           }`}
-          // disabled={user?.tokens <= 0}
+          disabled={user?.tokens <= 0}
         >
           <IoSearchOutline className="text-2xl" /> {loading ? "Analyzing..." : "Analyze Presence"}
         </button>
@@ -106,27 +122,30 @@ export default function Dashboard() {
 
           {/* Stat Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
-          {data.youtube && !errors.youtube && (
-          <>  
-            <StatCard title="YouTube Subscribers" value={data.youtube.subscribers} icon={<FaYoutube />} bgColor="bg-primary" />
-            <StatCard title="YouTube Avg Views Per Video" value={data.youtube.avgViewsPerVideo} icon={<FaYoutube />} bgColor="bg-primary" />
-            <StatCard title="YouTube Engagement Rate" value={data.youtube.engagementRate} icon={<FaYoutube />} bgColor="bg-primary" />
-          </>
-          )}
+            {data.youtube && !errors.youtube && (
+              <>
+                <StatCard title="YouTube Subscribers" value={data.youtube.subscribers} icon={<FaYoutube />} bgColor="bg-primary" />
+                <StatCard title="YouTube Avg Views Per Video" value={data.youtube.avgViewsPerVideo} icon={<FaYoutube />} bgColor="bg-primary" />
+                <StatCard title="YouTube Engagement Rate" value={data.youtube.engagementRate} icon={<FaYoutube />} bgColor="bg-primary" />
+              </>
+            )}
 
-          {data.reddit && !errors.reddit && (
-            <>
-            <StatCard title="Reddit Subscribers" value={data.reddit.subscribers} icon={<FaReddit />} bgColor="bg-orange-500" />
-            <StatCard title="Reddit Active Users" value={data.reddit.activeUsers} icon={<FaReddit />} bgColor="bg-orange-500" />
-            <StatCard title="Reddit Engagement Rate" value={data.reddit.engagementRate} icon={<FaReddit />} bgColor="bg-orange-500" />
-            </>
-          )}       
-          {data.twitter && !errors.twitter && (<>
-            <StatCard title="Twitter Followers" value={data.twitter.followers} icon={<FaTwitter />} bgColor="bg-blue-400" />
-            <StatCard title="Twitter Likes" value={data.twitter.totalLikes} icon={<FaTwitter />} bgColor="bg-blue-400" />
-            <StatCard title="Twitter Retweets" value={data.twitter.totalRetweets} icon={<FaTwitter />} bgColor="bg-blue-400" />
-            <StatCard title="Twitter Engagement Rate" value={data.twitter.engagementRate} icon={<FaTwitter />} bgColor="bg-blue-400" />
-          </>)}
+            {data.reddit && !errors.reddit && (
+              <>
+                <StatCard title="Reddit Subscribers" value={data.reddit.subscribers} icon={<FaReddit />} bgColor="bg-orange-500" />
+                <StatCard title="Reddit Active Users" value={data.reddit.activeUsers} icon={<FaReddit />} bgColor="bg-orange-500" />
+                <StatCard title="Reddit Engagement Rate" value={data.reddit.engagementRate} icon={<FaReddit />} bgColor="bg-orange-500" />
+              </>
+            )}
+
+            {data.twitter && !errors.twitter && (
+              <>
+                <StatCard title="Twitter Followers" value={data.twitter.followers} icon={<FaTwitter />} bgColor="bg-blue-400" />
+                <StatCard title="Twitter Likes" value={data.twitter.totalLikes} icon={<FaTwitter />} bgColor="bg-blue-400" />
+                <StatCard title="Twitter Retweets" value={data.twitter.totalRetweets} icon={<FaTwitter />} bgColor="bg-blue-400" />
+                <StatCard title="Twitter Engagement Rate" value={data.twitter.engagementRate} icon={<FaTwitter />} bgColor="bg-blue-400" />
+              </>
+            )}
           </div>
         </div>
       )}

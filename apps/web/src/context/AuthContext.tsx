@@ -20,11 +20,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const fetchAuthStatus = async () => {
       const authData = await checkAuthStatus();
+      
       if (authData && authData.name !== "Guest") {
         setIsAuthenticated(true);
         setUser(authData);
+      } else {
+        // Fallback to Guest login
+        const guestUser = {
+          name: "Guest",
+          email: "guest@example.com",
+          tokens: 3,
+        };
+        setIsAuthenticated(false);
+        setUser(guestUser);
+        localStorage.setItem("guest", "true"); // Optional flag
       }
     };
+  
     fetchAuthStatus();
   }, []);
 
