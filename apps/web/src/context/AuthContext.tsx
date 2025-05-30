@@ -64,15 +64,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return false; // No tokens left
     }
   
-    const newTokenCount = await consumeTokenAPI(); // Calls backend API
+    const newTokenCount = await consumeTokenAPI(); 
   
     if (newTokenCount !== false) {
-      // ✅ Update only if API returns a valid new token count
+      // Update only if API returns a valid new token count
       setUser((prev) => (prev ? { ...prev, tokens: newTokenCount } : null));
       return true;
     }
   
-    return false; // ❌ Backend failed, prevent frontend update
+    return false; // Backend failed, prevent frontend update
   };
   
 

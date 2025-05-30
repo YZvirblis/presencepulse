@@ -1,6 +1,6 @@
 export const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
-// ✅ Authenticate user (Login)
+//  Authenticate user (Login)
 export async function authenticateUser(email: string, password: string): Promise<string | null> {
   try {
     const res = await fetch(`${API_URL}/auth/login`, {
@@ -18,7 +18,7 @@ export async function authenticateUser(email: string, password: string): Promise
   }
 }
 
-// ✅ Register user (Sign Up)
+//  Register user (Sign Up)
 export async function registerUser(name: string, email: string, password: string): Promise<boolean> {
   try {
     const res = await fetch(`${API_URL}/auth/register`, {
@@ -36,7 +36,7 @@ export async function registerUser(name: string, email: string, password: string
 export async function checkAuthStatus() {
   const token = localStorage.getItem("token");
 
-  // ✅ If no token, fallback to guest user
+  // If no token, fallback to guest user
   if (!token) {
     console.log("🟡 No token found. Using guest mode.");
     return { name: "Guest", email: "demo", tokens: 5 };
@@ -48,12 +48,12 @@ export async function checkAuthStatus() {
     });
 
     if (!res.ok) {
-      console.warn("🔴 Invalid token. Falling back to guest mode.");
+      console.warn(" Invalid token. Falling back to guest mode.");
       throw new Error("Invalid token");
     }
 
     const userData = await res.json();
-    console.log("✅ Authenticated as:", userData.name);
+    console.log(" Authenticated as:", userData.name);
     return userData;
   } catch (error) {
     console.error("⚠️ Auth check failed:", error);
@@ -67,7 +67,7 @@ export function logoutUser() {
 }
 
 export async function consumeTokenAPI() {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token"); // JWT TOKEN
   if (!token) return false;
 
   try {
@@ -82,7 +82,7 @@ export async function consumeTokenAPI() {
     }
 
     const data = await res.json();
-    return data.tokensLeft; // ✅ Return new token count
+    return data.tokensLeft; //  Return new token count
   } catch (error) {
     console.error("Error consuming token:", error);
     return false;

@@ -7,7 +7,7 @@ const { authenticateUser } = require("../middleware/auth.middleware");
 const router = express.Router();
 const prisma = new PrismaClient();
 
-const SECRET_KEY = process.env.JWT_SECRET || "your_secret_key"; // Replace with environment variable in production
+const SECRET_KEY = process.env.JWT_SECRET; 
 
 // 🟢 User Registration
 router.post("/register", async (req, res) => {
@@ -37,7 +37,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// 🟢 User Login
+//  User Login
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -60,10 +60,10 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// ✅ GET /auth/me - Get authenticated user details
+// GET /auth/me - Get authenticated user details
 router.get("/me", authenticateUser, async (req, res) => {
   try {
-    const userId = req.user.userId; // Extracted from token in middleware
+    const userId = req.user.userId;
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { name: true, email: true, tokens: true },

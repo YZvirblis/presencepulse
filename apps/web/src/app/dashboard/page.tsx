@@ -71,7 +71,7 @@ export default function Dashboard() {
         {/* Guest Notice */}
 {user?.name === "Guest" && (
   <div className="mt-4 flex items-center justify-center gap-3 text-yellow-600 bg-yellow-100 border border-yellow-300 px-4 py-3 rounded">
-    <span className="font-medium">You're using a guest account.</span>
+    <span className="font-medium">You&apos;re using a guest account.</span>
     <button
       className="text-primary underline hover:text-indigo-800 transition cursor-pointer"
       onClick={() => setAuthModalOpen(true)}
@@ -124,9 +124,9 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
             {data.youtube && !errors.youtube && (
               <>
-                <StatCard title="YouTube Subscribers" value={data.youtube.subscribers} icon={<FaYoutube />} bgColor="bg-primary" />
-                <StatCard title="YouTube Avg Views Per Video" value={data.youtube.avgViewsPerVideo} icon={<FaYoutube />} bgColor="bg-primary" />
-                <StatCard title="YouTube Engagement Rate" value={data.youtube.engagementRate} icon={<FaYoutube />} bgColor="bg-primary" />
+                <StatCard title="YouTube Subscribers" value={data.youtube.subscribers} icon={<FaYoutube />} bgColor="bg-red-500" />
+                <StatCard title="YouTube Avg Views Per Video" value={data.youtube.avgViewsPerVideo} icon={<FaYoutube />} bgColor="bg-red-500" />
+                <StatCard title="YouTube Engagement Rate" value={data.youtube.engagementRate} icon={<FaYoutube />} bgColor="bg-red-500" />
               </>
             )}
 
